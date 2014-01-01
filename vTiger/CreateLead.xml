@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="CreateLeadSuite" parallel="none">
+  <test name="CreateLeadTest">
+    <classes>
+      <class name="com.vTiger.CreateLead.VT_CreateLead_Valid"/>
+    </classes>
+  </test> <!-- LeadsTest -->
+</suite> <!-- LeadsSuite -->

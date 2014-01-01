@@ -1,0 +1,8 @@
+<suite name="MainSuite">
+  <test name="AllTest">
+    <suite-files>
+      <suite-file path="Login_Logout.xml"/>
+	   <suite-file path="CreateLead.xml"/>
+    </suite-files>
+  </test>
+</suite>
