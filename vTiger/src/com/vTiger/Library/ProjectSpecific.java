@@ -1,16 +1,11 @@
 package com.vTiger.Library;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.Reporter;
 
@@ -29,10 +24,12 @@ public class ProjectSpecific extends SuperTestNG
 		//2.Logout
 		public static void logout()
 		{
-			//WebElement signout =driver.findElement(By.xpath("//td[3]/table/tbody/tr/td[2]"));
+			//Find the element needed to build the Action class to Mouseover(Hover) on the icon which has Sign-Out button
 			WebElement signout =driver.findElement(By.cssSelector("img[src$='user.PNG']"));
-			Actions actions = new Actions(driver);
-			actions.moveToElement(signout).build().perform();
+			//Create an instance of the myActionClass which does the Mouseover(Hover) action
+			MyActionClass aRef=new MyActionClass();
+			aRef.myActionClass(driver, signout);
+		
 			driver.findElement(By.linkText("Sign Out")).click();
 		}
 			
@@ -58,29 +55,32 @@ public class ProjectSpecific extends SuperTestNG
 		public static void createLead(String title,String firstName ,String lastName ,String company,String industry ,String assignedTo,String team )
 		{
 			driver.findElement(By.xpath("//img[@alt='Create Lead...']")).click();
-			Select tSelect,cSelect; 
-			tSelect = new Select(driver.findElement(By.name("salutationtype")));
-			tSelect.selectByValue(title);
+			
+			MySelectClass mySelClass = new MySelectClass();
+			mySelClass.prepareSelect(driver, "name", "salutationtype");
+			mySelClass.mySelectClassByValue(title);
+			
 			driver.findElement(By.name("firstname")).sendKeys(firstName);
 			driver.findElement(By.name("lastname")).sendKeys(lastName);
 			driver.findElement(By.name("company")).sendKeys(company);
-			cSelect = new Select(driver.findElement(By.name("industry")));
-			cSelect.selectByValue(industry);
-		
+			
+			mySelClass.prepareSelect(driver, "name", "industry");
+			mySelClass.mySelectClassByValue(industry);
+			
 			if (assignedTo.equals("User")){
 				driver.findElement(By.xpath("//input[@value='U']")).click();
-				tSelect = new Select(driver.findElement(By.name("assigned_user_id")));
-				tSelect.selectByIndex(0);
+				mySelClass.prepareSelect(driver, "name", "assigned_user_id");
+				mySelClass.mySelectClassByIndex(0);
 			} 
 			else if (assignedTo.equals("Group")){
 				driver.findElement(By.xpath("//input[@value='T']")).click();
-				tSelect = new Select(driver.findElement(By.name("assigned_group_id")));
-				tSelect.selectByIndex(1);
+				mySelClass.prepareSelect(driver, "name", "assigned_group_id");
+				mySelClass.mySelectClassByIndex(1);
 			}
 	
 			driver.findElement(By.xpath("//input[@type='submit']")).click();			
 		}
-	
+
 		//5.Add Description to existing Leads
 		public static void addLeadDesc(String leadName)
 		{
@@ -154,18 +154,16 @@ public class ProjectSpecific extends SuperTestNG
 				Generic.explicitWait(3);
 				
 				//Handle the Child Browser
-				Iterator <String> allWH	= driver.getWindowHandles().iterator();
-				String parentWH = allWH.next();
-				String childWH =  allWH.next();
-				driver.switchTo().window(childWH);
-				
+				MyChildBrowserclass childRef = new MyChildBrowserclass();
+				String[] res=childRef.myGetWindowHandles(driver);
+
+				childRef.switchToChild(driver, res[1]);
 				//driver.findElement(By.xpath("//tr[2]/td[1]/input[@name='selected_id']")).click();
 				driver.findElement(By.xpath("//tr[2]/td[2]/a")).click();
-				Generic.explicitWait(3);
-				
+								
 				//Transfer the control back to Parent Browser
-				driver.switchTo().window(parentWH);
-			
+				childRef.switchToChild(driver, res[0]);
+				
 				ProjectSpecific.gotoModule("Leads");
 			}//End for
 		}//End Method
@@ -234,19 +232,24 @@ public class ProjectSpecific extends SuperTestNG
 		
 		//8.Add Modules to be displayed on Main menu using Menu Editor.The top 10 items appear on the main menu and delete it after verification.
 		public static void changeMenu(String module){
-			//Build the Action class to Mouseover(Hover) on the Settings button present next to'Administrator'
+			//Find the element needed to build the Action class to Mouseover(Hover) on the Settings button present next to'Administrator'
 			WebElement crmSettings=driver.findElement(By.cssSelector("img[src$='mainSettings.PNG']"));
-			Actions actions = new Actions(driver);
-			actions.moveToElement(crmSettings).build().perform();
-			
+			//Create an instance of the myActionClass which does the Mouseover(Hover) action
+			MyActionClass aRef=new MyActionClass();
+			aRef.myActionClass(driver, crmSettings);
+
 			// Navigate to Menu Editor
 			driver.findElement(By.linkText("CRM Settings")).click();
 			driver.findElement(By.linkText("Menu Editor")).click();
 		
-			//Select the required module
-			WebElement listBox = driver.findElement(By.id("availList"));
-			Select mSelect = new Select(listBox);
-			mSelect.selectByVisibleText(module);
+			//Select the required module. Create mySelect instance
+		/*	MySelectClass mySelClass = new MySelectClass();
+			mySelClass.mySelectClassByVisibleText(driver,"id","availList", module);
+		*/	
+			MySelectClass mySelClass = new MySelectClass();
+			mySelClass.prepareSelect(driver,"id","availList");
+			mySelClass.mySelectClassByVisibleText( module);
+
 			
 			//Send the selected module to right side box
 			driver.findElement(By.xpath("//img[@title='right']")).click();
@@ -258,94 +261,48 @@ public class ProjectSpecific extends SuperTestNG
 			driver.findElement(By.xpath("//input[@name='save']")).click();
 			Generic.explicitWait(2);
 			
-			//Refresh the page by clicking anywhere on the page
-			ProjectSpecific.gotoModule("Leads");
-			Generic.explicitWait(3);
+			//Refresh the page by clicking on Home page button
+			driver.findElement(By.cssSelector("img[src$='Home.PNG']")).click();
+			Generic.explicitWait(2);
 			
 			//Verify if the selected module appears on the main page
 			ProjectSpecific.gotoModule(module);
+				
+			//Delete the added module
+			crmSettings=driver.findElement(By.cssSelector("img[src$='mainSettings.PNG']"));
+			
+			aRef.myActionClass(driver, crmSettings);
+			// Navigate to Menu Editor
+			driver.findElement(By.linkText("CRM Settings")).click();
+			driver.findElement(By.linkText("Menu Editor")).click();
+		
+			//Select the required module. Use the above created mySelect instance
+			mySelClass.prepareSelect(driver,"id","selectedColumns");
+			mySelClass.mySelectClassByVisibleText( module);
+
+			//Send the selected module to right side box
+			driver.findElement(By.xpath("//img[@title='left']")).click();
+			driver.findElement(By.xpath("//input[@name='save']")).click();
+			driver.findElement(By.cssSelector("img[src$='Home.PNG']")).click();
 		}
 		
 		//9. Schedule a meeting for today using Calendar button on home page. 
 		//If the meeting falls on Sat/Sun then schedule the meeting on next working day. 
 		public void createMeeting(){
-			//Create an instance of Calendar class
-			Calendar cal = Calendar.getInstance();
-			//Find the current month
-			int monthNow = cal.get(Calendar.MONTH);
-			//Find the current day
-			int curDay=cal.get(Calendar.DAY_OF_WEEK);
-		
-			int temp;
-			String dateToSelect=null,dd = null, mtStartHr=null;
+			MyDateTime mydt =	new MyDateTime();
 
-		//If the current day is  Sat/Sun then add 2/1 day(s) to schedule the meeting on a weekday
-			if (curDay == 1) {  
-				cal.add(Calendar.DATE, 1);
-				
-				Date date = cal.getTime();             
-				SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-				dateToSelect = format1.format(date);   
-				dd=dateToSelect.substring(8);
-				
-				cal.add(Calendar.HOUR,1);
-				temp=cal.get(Calendar.HOUR);
-				if (temp <=9) {
-					mtStartHr=Integer.toString(temp);
-					mtStartHr="0".concat(mtStartHr);
-				}
-				else {
-					mtStartHr=Integer.toString(temp);
-				}
-			}	
-			else if (curDay == 7){  //DAY_OF_WEEK returns 7 if it is Saturday
-				cal.add(Calendar.DATE, 2);
-				
-				Date date = cal.getTime();             
-				SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-				dateToSelect = format1.format(date);   
-				dd=dateToSelect.substring(8);
-
-				cal.add(Calendar.HOUR,1);
-				temp=cal.get(Calendar.HOUR);
-				if (temp <=9) {
-					mtStartHr=Integer.toString(temp);
-					mtStartHr="0".concat(mtStartHr);
-				}
-				else {
-					mtStartHr=Integer.toString(temp);
-				}
-			}	
-			else{	
-				//Add one hour to the day
-				cal.add(Calendar.HOUR_OF_DAY,1);
-				
-				if(curDay != 1 &&  curDay!=7){
-					if((cal.get(Calendar.HOUR_OF_DAY) == 23) && curDay==6){
-						cal.add(Calendar.DATE, 2);
-					}
-								
-				Date date = cal.getTime();             
-				SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-				dateToSelect = format1.format(date);   
-				dd=dateToSelect.substring(8);
-					
-				temp=cal.get(Calendar.HOUR);
-				if (temp <=9) {
-					mtStartHr=Integer.toString(temp);
-					mtStartHr="0".concat(mtStartHr);
-				}
-				else {
-					mtStartHr=Integer.toString(temp);
-				}
-				
-				}
-			}
+			String	dateToSelect=mydt.checkDay().substring(0,10);
+			String mtStartHr=mydt.meetTime();
+			String mer=mydt.meetMeridian().toLowerCase();
+			String dd=mydt.meetDate();
+			int monthNow=mydt.monthNow;
+			int monthAfter=mydt.retMonth();
 			
-			//Get the current month to find out if the month has changed after adding 2/1 day(s) 
-			int monthAfter = cal.get(Calendar.MONTH);
-			//cal.add(Calendar.MONTH,2);
-
+			//Convert date to integer to check if the date is between 0-9. If yes, remove '0' from date
+			int x = Integer.valueOf(dd);
+			if(x <=9)
+				dd=mydt.meetDate().substring(1);
+			
 			driver.findElement(By.cssSelector("img[title='Open Calendar...']")).click();
 			Generic.explicitWait(3);
 						
@@ -358,27 +315,29 @@ public class ProjectSpecific extends SuperTestNG
 			//select the date using the string extracted above
 			driver.findElement(By.linkText(dd)).click();
 		
-			//Fetch the element on whom the mouse should be hovered
+			//Find the element needed to build the Action class to Mouseover(Hover) on the 'Add' button
 			WebElement addMeet =driver.findElement(By.cssSelector("td.calAddButton"));
-			//Create instance of Actions class and pass the WebDriver as argument
-			Actions actions = new Actions(driver);
-			actions.moveToElement(addMeet).build().perform();
+			//Create an instance of the myActionClass which does the Mouseover(Hover) action
+			MyActionClass aRef=new MyActionClass();
+			aRef.myActionClass(driver, addMeet);
+				
 			driver.findElement(By.id("addmeeting")).click();
-
 			driver.findElement(By.cssSelector("input[name='subject']")).sendKeys("Team Meeting");
 			driver.findElement(By.xpath("//input[@type='checkbox' and @name='visibility']")).click();
 			
+			MySelectClass mySelClass = new MySelectClass();
+			mySelClass.prepareSelect(driver,"id","eventstatus");
+			mySelClass.mySelectClassByValue("Planned");
 			
-			Select tSelect; 
-			tSelect = new Select(driver.findElement(By.id("eventstatus")));
-			tSelect.selectByValue("Planned");
-		
 			Generic.explicitWait(2);
 			
-			tSelect = new Select(driver.findElement(By.id("starthr")));
-			tSelect.selectByValue(mtStartHr);
-		
+			mySelClass.prepareSelect(driver,"id","starthr");
+			mySelClass.mySelectClassByValue(mtStartHr);
+			
 			Generic.explicitWait(2);
+
+			mySelClass.prepareSelect(driver,"css","select[id='startfmt']");
+			mySelClass.mySelectClassByValue(mer);
 			
 			driver.findElement(By.id("jscal_field_date_start")).clear();
 			driver.findElement(By.id("jscal_field_date_start")).sendKeys(dateToSelect);
@@ -388,26 +347,37 @@ public class ProjectSpecific extends SuperTestNG
 			driver.findElement(By.cssSelector("input[name='eventsave']")).click();
 			
 			Generic.explicitWait(3);
-			/*//Handle the Child Browser
-			Iterator <String> allWH	= driver.getWindowHandles().iterator();
-			String parentWH = allWH.next();
-			String childWH =  allWH.next();
-			driver.switchTo().window(childWH);
-			
-			//Transfer the control back to Parent Browser
-			driver.switchTo().window(parentWH);
-			
-			*
-			*/
 		}
 		
-		
-		
-		
-		//10.
-		
-		
-		//17.Verify Title()
+		//10. Click 'Privacy Policy' and handle the child browsers
+		public static void privacyPolicy()
+		{
+			driver.findElement(By.linkText("Privacy Policy")).click();
+			
+			MyChildBrowserclass childRef = new MyChildBrowserclass();
+			String[] res = childRef.myGetWindowHandles(driver);
+	
+			childRef.switchToChild(driver, res[1]);
+			WebElement contact=driver.findElement(By.xpath("//a[@href='/contact/']"));
+			
+			MyActionClass actionRef= new MyActionClass();
+			actionRef.myContextClick(driver, contact);
+			
+			res = childRef.myGetWindowHandles(driver);
+			
+			childRef.switchToChild(driver, res[2]);
+			childRef.closeDriver(driver);
+			
+			childRef.switchToChild(driver, res[1]);
+			childRef.closeDriver(driver);
+			
+			//switch the control back to parent
+			childRef.switchToParent(driver, res[0]);
+			driver.findElement(By.cssSelector("img[src$='Home.PNG']")).click();
+
+		}
+				
+		//11.Verify Title()
 		public static void verifyTitle(String eTitle)
 		{
 			Generic.explicitWait(3);
@@ -415,14 +385,14 @@ public class ProjectSpecific extends SuperTestNG
 			Assert.assertEquals(aTitle, eTitle);
 		}
 
-		//8.Verify Error Message
+		//12.Verify Error Message
 			public static void verifyErrMsg(String eErrMsg)
 			{
 				String aErrMsg = driver.findElement(By.className("errormsg")).getText();
 				Assert.assertEquals(aErrMsg, eErrMsg);
 			}
 
-		//9.Verify Success Message
+		//13.Verify Success Message
 		public static void verifySuccessMsg(String eSuccessMsg)
 		{
 			String aSuccessMsg=driver.findElement(By.className("successmsg")).getText();

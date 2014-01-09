@@ -38,7 +38,7 @@ public class VT_CreateLead_Valid extends SuperTestNG{
 			ProjectSpecific.createLead(title,firstName ,lastName ,company,industry ,assignedTo,team);
 		}
 		
-		//ProjectSpecific.logout();
+		ProjectSpecific.logout();
 
 	}
 }	

@@ -49,7 +49,7 @@ public class SuperTestNG {
 		Reporter.log("TimeOut is set to 10 Sec and Browser is maximized",true);
 	}//End of Before method
 		
-//	@AfterMethod
+	@AfterMethod
 	public void postCondition()
 	{
 		driver.quit();

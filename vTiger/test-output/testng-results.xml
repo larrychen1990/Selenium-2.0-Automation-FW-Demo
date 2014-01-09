@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="1" passed="1">
+  <reporter-output>
+    <line>
+      <![CDATA[Navigating to URL:http://localhost:8888]]>
+    </line>
+    <line>
+      <![CDATA[TimeOut is set to 10 Sec and Browser is maximized]]>
+    </line>
+    <line>
+      <![CDATA[Closing the Browser]]>
+    </line>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="21528" started-at="2014-01-09T18:33:45Z" finished-at="2014-01-09T18:34:06Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="21528" started-at="2014-01-09T18:33:45Z" finished-at="2014-01-09T18:34:06Z">
+      <class name="com.vTiger.HomePageButtons.VT_CreateMeeting">
+        <test-method status="PASS" signature="preCondition()[pri:0, instance:com.vTiger.HomePageButtons.VT_CreateMeeting@45586edb]" name="preCondition" is-config="true" duration-ms="3515" started-at="2014-01-10T00:03:45Z" finished-at="2014-01-10T00:03:48Z">
+          <reporter-output>
+            <line>
+              <![CDATA[Navigating to URL:http://localhost:8888]]>
+            </line>
+            <line>
+              <![CDATA[TimeOut is set to 10 Sec and Browser is maximized]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- preCondition -->
+        <test-method status="PASS" signature="testVT_Calendar()[pri:0, instance:com.vTiger.HomePageButtons.VT_CreateMeeting@45586edb]" name="testVT_Calendar" duration-ms="17881" started-at="2014-01-10T00:03:48Z" finished-at="2014-01-10T00:04:06Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testVT_Calendar -->
+        <test-method status="PASS" signature="postCondition()[pri:0, instance:com.vTiger.HomePageButtons.VT_CreateMeeting@45586edb]" name="postCondition" is-config="true" duration-ms="119" started-at="2014-01-10T00:04:06Z" finished-at="2014-01-10T00:04:06Z">
+          <reporter-output>
+            <line>
+              <![CDATA[Closing the Browser]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- postCondition -->
+      </class> <!-- com.vTiger.HomePageButtons.VT_CreateMeeting -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
